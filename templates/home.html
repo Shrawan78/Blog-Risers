@@ -1,11 +1,289 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Risers — Stories worth staying up for</title>
+  <meta name="description" content="Blog Risers is a home for writers and readers. Essays, guides and long-form stories from a growing community of voices.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    <p>So the html page is now rendered properly using html</p>
+
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <!-- ======================= HEADER / MASTHEAD ======================= -->
+  <header class="masthead">
+    <div class="masthead__top">
+      <a href="{% url 'home' %}" class="masthead__brand">
+        <span class="masthead__mark">Blog Risers</span>
+        <span class="masthead__tagline">Stories worth staying up for</span>
+      </a>
+    </div>
+
+    <nav class="site-nav" aria-label="Primary">
+      <div class="site-nav__inner">
+        <ul class="site-nav__links">
+          <li><a href="{% url 'home' %}" class="is-active">Home</a></li>
+          <li><a href="{% url 'post_list' %}">Explore</a></li>
+          <li><a href="{% url 'category_list' %}">Categories</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'post_create' %}">Write</a></li>
+          {% endif %}
+        </ul>
+
+        <form class="site-nav__search" action="{% url 'post_list' %}" method="get" role="search">
+          <label for="site-search" class="visually-hidden">Search posts</label>
+          <svg class="site-nav__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.25" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <input id="site-search" type="search" name="q" placeholder="Search titles, authors, tags" autocomplete="off">
+        </form>
+
+        <div class="site-nav__account">
+          {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="site-nav__user">{{ user.first_name|default:user.username }}</a>
+            <form action="{% url 'logout' %}" method="post" class="site-nav__logout-form">
+              {% csrf_token %}
+              <button type="submit" class="link-button">Log out</button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="site-nav__login">Log in</a>
+            <a href="{% url 'register' %}" class="button button--small">Join</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ======================= HERO / FEATURED POST ======================= -->
+    {% if featured_post %}
+    <section class="hero" aria-label="Featured story">
+      <div class="hero__inner">
+        <div class="hero__content">
+          <p class="hero__kicker">{{ featured_post.category.name|default:"Featured" }}</p>
+          <h1 class="hero__title">
+            <a href="{% url 'post_detail' featured_post.slug %}">{{ featured_post.title }}</a>
+          </h1>
+          <p class="hero__excerpt">{{ featured_post.excerpt|default:featured_post.body|truncatewords:34 }}</p>
+          <p class="hero__meta">
+            <span>By {{ featured_post.author.get_full_name|default:featured_post.author.username }}</span>
+            <span class="dot" aria-hidden="true">&middot;</span>
+            <span>{{ featured_post.published_at|date:"F j, Y" }}</span>
+            <span class="dot" aria-hidden="true">&middot;</span>
+            <span>{{ featured_post.read_time|default:"6" }} min read</span>
+          </p>
+          <a class="hero__link" href="{% url 'post_detail' featured_post.slug %}">Read the story</a>
+        </div>
+
+        <div class="hero__cover">
+          {% if featured_post.cover_image %}
+            <img src="{{ featured_post.cover_image.url }}" alt="">
+          {% else %}
+            <div class="cover-block cover-block--a">
+              <span class="cover-block__initial">{{ featured_post.title|first|upper }}</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ======================= MORE TO READ ======================= -->
+    {% if secondary_posts %}
+    <section class="more-reads">
+      <div class="section-head">
+        <h2>More to read</h2>
+      </div>
+
+      <div class="more-reads__grid">
+        {% for post in secondary_posts %}
+        <article class="read-card">
+          <a class="read-card__cover" href="{% url 'post_detail' post.slug %}">
+            {% if post.cover_image %}
+              <img src="{{ post.cover_image.url }}" alt="">
+            {% else %}
+              <div class="cover-block cover-block--{% cycle 'b' 'c' 'd' %}">
+                <span class="cover-block__initial">{{ post.title|first|upper }}</span>
+              </div>
+            {% endif %}
+          </a>
+          <p class="read-card__category">{{ post.category.name|default:"Essay" }}</p>
+          <h3 class="read-card__title">
+            <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+          </h3>
+          <p class="read-card__meta">{{ post.author.get_full_name|default:post.author.username }} &middot; {{ post.published_at|date:"M j" }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ======================= BROWSE BY CATEGORY ======================= -->
+    {% if categories %}
+    <section class="browse">
+      <div class="section-head">
+        <h2>Browse by category</h2>
+      </div>
+      <ul class="category-pills">
+        {% for category in categories %}
+        <li>
+          <a class="category-pill" href="{% url 'post_list' %}?category={{ category.slug }}">
+            {{ category.name }}
+            <span class="category-pill__count">{{ category.post_count|default:0 }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <!-- ======================= LATEST POSTS ======================= -->
+    <section class="latest">
+      <div class="section-head section-head--with-filters">
+        <h2>Latest posts</h2>
+
+        <form class="filter-bar" action="{% url 'post_list' %}" method="get">
+          <label for="filter-category" class="visually-hidden">Filter by category</label>
+          <select id="filter-category" name="category">
+            <option value="">All categories</option>
+            {% for category in categories %}
+            <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="filter-sort" class="visually-hidden">Sort by</label>
+          <select id="filter-sort" name="sort">
+            <option value="newest" {% if request.GET.sort == "newest" %}selected{% endif %}>Newest first</option>
+            <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Oldest first</option>
+            <option value="popular" {% if request.GET.sort == "popular" %}selected{% endif %}>Most read</option>
+          </select>
+
+          <button type="submit" class="button button--outline button--small">Apply</button>
+        </form>
+      </div>
+
+      <div class="latest__list">
+        {% for post in posts %}
+        <article class="post-row">
+          <a class="post-row__cover" href="{% url 'post_detail' post.slug %}">
+            {% if post.cover_image %}
+              <img src="{{ post.cover_image.url }}" alt="">
+            {% else %}
+              <div class="cover-block cover-block--{% cycle 'a' 'b' 'c' 'd' %}">
+                <span class="cover-block__initial">{{ post.title|first|upper }}</span>
+              </div>
+            {% endif %}
+          </a>
+          <div class="post-row__body">
+            <p class="post-row__meta">
+              <span>{{ post.category.name|default:"Essay" }}</span>
+              <span class="dot" aria-hidden="true">&middot;</span>
+              <span>{{ post.published_at|date:"M j, Y" }}</span>
+            </p>
+            <h3 class="post-row__title">
+              <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+            </h3>
+            <p class="post-row__excerpt">{{ post.excerpt|default:post.body|truncatewords:26 }}</p>
+            <p class="post-row__footer">
+              {{ post.author.get_full_name|default:post.author.username }}
+              <span class="dot" aria-hidden="true">&middot;</span>
+              {{ post.read_time|default:"5" }} min read
+              <span class="dot" aria-hidden="true">&middot;</span>
+              {{ post.comment_count|default:0 }} comment{{ post.comment_count|pluralize }}
+            </p>
+          </div>
+        </article>
+        {% empty %}
+        <p class="latest__empty">Nothing has been published yet. Once posts go live, they'll show up here.</p>
+        {% endfor %}
+      </div>
+
+      {% if is_paginated %}
+      <nav class="pagination" aria-label="Post pages">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="pagination__link" aria-label="Previous page">
+          <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true"><path d="M7.5 1L1.5 7L7.5 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Previous
+        </a>
+        {% endif %}
+
+        <span class="pagination__status">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="pagination__link" aria-label="Next page">
+          Next
+          <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true"><path d="M1.5 1L7.5 7L1.5 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        {% endif %}
+      </nav>
+      {% endif %}
+    </section>
+
+    <!-- ======================= CTA: WRITE FOR US ======================= -->
+    <section class="cta-band">
+      <div class="cta-band__inner">
+        <h2>Have something to say?</h2>
+        <p>Blog Risers is built on new voices as much as familiar ones. Publish your first post in minutes and find readers who care about the same things you do.</p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'post_create' %}" class="button button--light">Start writing</a>
+        {% else %}
+          <a href="{% url 'register' %}" class="button button--light">Create an account</a>
+        {% endif %}
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================= FOOTER ======================= -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="footer-brand">
+        <span class="footer-brand__mark">Blog Risers</span>
+        <p class="footer-brand__tagline">A home for writers and the people who read them.</p>
+      </div>
+
+      <div class="footer-columns">
+        <div class="footer-column">
+          <h3>Explore</h3>
+          <ul>
+            <li><a href="{% url 'post_list' %}">All posts</a></li>
+            <li><a href="{% url 'category_list' %}">Categories</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Community</h3>
+          <ul>
+            <li><a href="{% url 'register' %}">Write for us</a></li>
+            <li><a href="{% url 'home' %}">Guidelines</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Account</h3>
+          <ul>
+            {% if user.is_authenticated %}
+              <li><a href="{% url 'profile' %}">Your profile</a></li>
+            {% else %}
+              <li><a href="{% url 'login' %}">Log in</a></li>
+              <li><a href="{% url 'register' %}">Join Blog Risers</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p>&copy; {% now "Y" %} Blog Risers. Built with care.</p>
+    </div>
+  </footer>
+
 </body>
 </html>

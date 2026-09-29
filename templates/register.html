@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join — Blog Risers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="masthead__top">
+      <a href="{% url 'home' %}" class="masthead__brand">
+        <span class="masthead__mark">Blog Risers</span>
+        <span class="masthead__tagline">Stories worth staying up for</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="auth-page">
+      <div class="auth-card">
+        <div class="auth-card__head">
+          <h1>Join Blog Risers</h1>
+          <p>Create an account to publish posts, save what you read, and join the conversation.</p>
+        </div>
+
+        <form>
+          <div class="form-field">
+            <label for="name">Full name</label>
+            <input id="name" type="text" placeholder="Your name">
+          </div>
+          <div class="form-field">
+            <label for="reg-username">Username</label>
+            <input id="reg-username" type="text" placeholder="Pick a username">
+          </div>
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com">
+          </div>
+          <div class="form-field">
+            <label for="reg-password">Password</label>
+            <input id="reg-password" type="password" placeholder="••••••••">
+          </div>
+          <div class="form-field">
+            <label for="confirm-password">Confirm password</label>
+            <input id="confirm-password" type="password" placeholder="••••••••">
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="button">Create account</button>
+          </div>
+          <p class="form-hint">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__bottom"><p>&copy; 2026 Blog Risers. Built with care.</p></div>
+  </footer>
+
+</body>
+</html>

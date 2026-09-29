@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories — Blog Risers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="masthead__top">
+      <a href="{% url 'home' %}" class="masthead__brand">
+        <span class="masthead__mark">Blog Risers</span>
+        <span class="masthead__tagline">Stories worth staying up for</span>
+      </a>
+    </div>
+    <nav class="site-nav" aria-label="Primary">
+      <div class="site-nav__inner">
+        <ul class="site-nav__links">
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'post_list' %}">Explore</a></li>
+          <li><a href="{% url 'category_list' %}" class="is-active">Categories</a></li>
+          <li><a href="{% url 'post_create' %}">Write</a></li>
+        </ul>
+        <form class="site-nav__search" action="{% url 'post_list' %}" method="get" role="search">
+          <label for="site-search" class="visually-hidden">Search posts</label>
+          <svg class="site-nav__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.25" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <input id="site-search" type="search" name="q" placeholder="Search titles, authors, tags" autocomplete="off">
+        </form>
+        <div class="site-nav__account">
+          <a href="{% url 'login' %}" class="site-nav__login">Log in</a>
+          <a href="{% url 'register' %}" class="button button--small">Join</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <h1>Categories</h1>
+      <p>Browse Blog Risers by subject. Pick one to see every story published under it.</p>
+    </div>
+
+    <div class="category-grid">
+      <article class="category-card">
+        <p class="category-card__count">42 posts</p>
+        <h3>Culture</h3>
+        <p>Books, film, internet life, and the habits that shape how we spend our attention.</p>
+        <a href="{% url 'post_list' %}">Browse Culture</a>
+      </article>
+
+      <article class="category-card">
+        <p class="category-card__count">29 posts</p>
+        <h3>Technology</h3>
+        <p>Software, infrastructure, and the quieter engineering decisions behind the tools we use daily.</p>
+        <a href="{% url 'post_list' %}">Browse Technology</a>
+      </article>
+
+      <article class="category-card">
+        <p class="category-card__count">51 posts</p>
+        <h3>Personal Essays</h3>
+        <p>First-person writing on memory, family, growing up, and the things we carry.</p>
+        <a href="{% url 'post_list' %}">Browse Personal Essays</a>
+      </article>
+
+      <article class="category-card">
+        <p class="category-card__count">18 posts</p>
+        <h3>Food &amp; Home</h3>
+        <p>Cooking for real life — small kitchens, weeknight dinners, and the meals worth repeating.</p>
+        <a href="{% url 'post_list' %}">Browse Food &amp; Home</a>
+      </article>
+
+      <article class="category-card">
+        <p class="category-card__count">23 posts</p>
+        <h3>Travel</h3>
+        <p>Notes from places that changed how a writer saw something ordinary back home.</p>
+        <a href="{% url 'post_list' %}">Browse Travel</a>
+      </article>
+
+      <article class="category-card">
+        <p class="category-card__count">15 posts</p>
+        <h3>Science</h3>
+        <p>Plain-language writing on research, discovery, and the questions still open.</p>
+        <a href="{% url 'post_list' %}">Browse Science</a>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="footer-brand">
+        <span class="footer-brand__mark">Blog Risers</span>
+        <p class="footer-brand__tagline">A home for writers and the people who read them.</p>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-column">
+          <h3>Explore</h3>
+          <ul><li><a href="{% url 'post_list' %}">All posts</a></li><li><a href="{% url 'category_list' %}">Categories</a></li></ul>
+        </div>
+        <div class="footer-column">
+          <h3>Community</h3>
+          <ul><li><a href="{% url 'register' %}">Write for us</a></li><li><a href="{% url 'home' %}">Guidelines</a></li></ul>
+        </div>
+        <div class="footer-column">
+          <h3>Account</h3>
+          <ul><li><a href="{% url 'login' %}">Log in</a></li><li><a href="{% url 'register' %}">Join Blog Risers</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer__bottom"><p>&copy; 2026 Blog Risers. Built with care.</p></div>
+  </footer>
+
+</body>
+</html>

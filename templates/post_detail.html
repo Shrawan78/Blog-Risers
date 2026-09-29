@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Slow Read — Blog Risers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="masthead__top">
+      <a href="{% url 'home' %}" class="masthead__brand">
+        <span class="masthead__mark">Blog Risers</span>
+        <span class="masthead__tagline">Stories worth staying up for</span>
+      </a>
+    </div>
+    <nav class="site-nav" aria-label="Primary">
+      <div class="site-nav__inner">
+        <ul class="site-nav__links">
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'post_list' %}">Explore</a></li>
+          <li><a href="{% url 'category_list' %}">Categories</a></li>
+          <li><a href="{% url 'post_create' %}">Write</a></li>
+        </ul>
+        <form class="site-nav__search" action="{% url 'post_list' %}" method="get" role="search">
+          <label for="site-search" class="visually-hidden">Search posts</label>
+          <svg class="site-nav__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.25" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <input id="site-search" type="search" name="q" placeholder="Search titles, authors, tags" autocomplete="off">
+        </form>
+        <div class="site-nav__account">
+          <a href="{% url 'login' %}" class="site-nav__login">Log in</a>
+          <a href="{% url 'register' %}" class="button button--small">Join</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <div class="article-header">
+        <p class="article-header__kicker">Culture</p>
+        <h1>The Slow Read: Why We're Forgetting How to Finish a Book</h1>
+        <p class="article-header__meta">By Maya Okonkwo &middot; September 24, 2026 &middot; 6 min read</p>
+      </div>
+
+      <div class="article-cover">
+        <div class="cover-block cover-block--a">
+          <span class="cover-block__initial">S</span>
+        </div>
+      </div>
+
+      <div class="article-body">
+        <p>Somewhere in the last decade, "I'm reading a book" quietly became a claim rather than a fact. Ask around and most people will name something they started. Fewer will tell you what happens on the last page.</p>
+        <p>This isn't really about laziness. It's about the shape of our days. A notification arrives mid-paragraph, and the paragraph loses. Multiply that by every hour of every day and finishing anything long becomes an act of resistance rather than a default.</p>
+        <h2>What actually changed</h2>
+        <p>The book itself hasn't gotten harder. What's changed is the number of things competing for the same forty minutes on the couch. A feed is built to reward you every few seconds. A novel asks you to wait two hundred pages for the reward, and most of us have quietly renegotiated that deal without noticing.</p>
+        <p>None of this means the long-form habit is gone for good. It means it has to be chosen on purpose now, the way people once had to choose to exercise once their jobs stopped requiring physical labor. The book didn't change. The rest of the day did.</p>
+        <h2>A smaller, more honest goal</h2>
+        <p>The people I know who still finish books tend to share one habit: they stopped trying to read everywhere. One chair, one time of day, phone in another room. It's a small rule, but it's the difference between a book that lives on the nightstand for a year and one that gets read.</p>
+      </div>
+
+      <div class="author-box">
+        <div class="avatar">M</div>
+        <div>
+          <h4>Maya Okonkwo</h4>
+          <p>Writes about culture, attention, and the slow stuff. Based in Lisbon. Previously a bookseller for six years.</p>
+        </div>
+      </div>
+
+      <section class="comments">
+        <h2>12 comments</h2>
+
+        <form class="comment-form">
+          <label for="comment" class="visually-hidden">Add a comment</label>
+          <textarea id="comment" placeholder="Add a comment"></textarea>
+          <div class="form-actions">
+            <button type="submit" class="button button--small">Post comment</button>
+          </div>
+        </form>
+
+        <div class="comment-list">
+          <div class="comment">
+            <div class="avatar">R</div>
+            <div class="comment__body">
+              <p class="comment__meta"><span class="comment__author">Rina Fuentes</span> <span class="comment__date">&middot; 2 days ago</span></p>
+              <p class="comment__text">The one-chair rule is exactly it. I bought a reading lamp for a corner of my apartment and that alone doubled how much I finish.</p>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="avatar">D</div>
+            <div class="comment__body">
+              <p class="comment__meta"><span class="comment__author">David Kim</span> <span class="comment__date">&middot; 3 days ago</span></p>
+              <p class="comment__text">I don't think it's only phones. Audiobooks at 1.5x speed trained me to want plot to move faster than most good prose is willing to.</p>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="avatar">L</div>
+            <div class="comment__body">
+              <p class="comment__meta"><span class="comment__author">Lena Hartmann</span> <span class="comment__date">&middot; 4 days ago</span></p>
+              <p class="comment__text">Saving this one to reread once I finish the book I'm currently pretending to read.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="footer-brand">
+        <span class="footer-brand__mark">Blog Risers</span>
+        <p class="footer-brand__tagline">A home for writers and the people who read them.</p>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-column">
+          <h3>Explore</h3>
+          <ul><li><a href="{% url 'post_list' %}">All posts</a></li><li><a href="{% url 'category_list' %}">Categories</a></li></ul>
+        </div>
+        <div class="footer-column">
+          <h3>Community</h3>
+          <ul><li><a href="{% url 'register' %}">Write for us</a></li><li><a href="{% url 'home' %}">Guidelines</a></li></ul>
+        </div>
+        <div class="footer-column">
+          <h3>Account</h3>
+          <ul><li><a href="{% url 'login' %}">Log in</a></li><li><a href="{% url 'register' %}">Join Blog Risers</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer__bottom"><p>&copy; 2026 Blog Risers. Built with care.</p></div>
+  </footer>
+
+</body>
+</html>
