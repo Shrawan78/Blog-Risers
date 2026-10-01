@@ -968,6 +968,37 @@ h1, h2, h3 { font-family: var(--font-serif); color: var(--ink); margin: 0; }
 }
 .form-hint a { color: var(--green); font-weight: 600; }
 
+.form-error {
+  font-size: 0.82rem;
+  color: #A23B3B;
+  margin: 0;
+}
+
+/* form widgets rendered directly by Django ({{ form.field }}) need the
+   same look as the hand-written inputs above */
+.form-field input[type="text"],
+.form-field input[type="email"],
+.form-field input[type="password"],
+.form-field input[type="file"],
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--green);
+  background: var(--paper-raised);
+}
+
 /* =========================================================================
    Auth pages (login / register)
    ========================================================================= */
@@ -1067,3 +1098,111 @@ h1, h2, h3 { font-family: var(--font-serif); color: var(--ink); margin: 0; }
   .profile-header__actions { margin-left: 0; width: 100%; }
   .profile-header__actions .button { width: 100%; text-align: center; }
 }
+
+/* =========================================================================
+   Form error text + Django-rendered form widgets ({{ form.field }})
+   ========================================================================= */
+
+.form-error {
+  font-size: 0.82rem;
+  color: #A23B3B;
+  margin: 0;
+}
+
+.form-field input[type="text"],
+.form-field input[type="email"],
+.form-field input[type="password"],
+.form-field input[type="file"],
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--green);
+  background: var(--paper-raised);
+}
+
+/* =========================================================================
+   Free-text tag chips on the write/edit post page
+   ========================================================================= */
+
+.tag-input-row {
+  display: flex;
+  gap: 10px;
+}
+.tag-input-row input {
+  flex: 1;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--green-dark);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 8px 6px 14px;
+}
+
+.tag-chip__remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--meta);
+  padding: 2px 4px;
+}
+.tag-chip__remove:hover {
+  color: var(--green-dark);
+}
+
+/* =========================================================================
+   Explore page filter bar — now holds category, tag, two dates, sort,
+   and two buttons, so it needs to wrap onto multiple lines
+   ========================================================================= */
+
+.filter-bar--wrap {
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+.filter-bar--wrap input[type="date"] {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+}
+
+/* =========================================================================
+   Edit/delete links under a comment
+   ========================================================================= */
+
+.comment__actions {
+  font-size: 0.8rem;
+  margin: 6px 0 0;
+}
+.comment__actions a { color: var(--meta); }
+.comment__actions a:hover { color: var(--green); }

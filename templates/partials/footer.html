@@ -1,0 +1,38 @@
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="footer-brand">
+      <span class="footer-brand__mark">Blog Risers</span>
+      <p class="footer-brand__tagline">A home for writers and the people who read them.</p>
+    </div>
+    <div class="footer-columns">
+      <div class="footer-column">
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="{% url 'post_list' %}">All posts</a></li>
+          <li><a href="{% url 'category_list' %}">Categories</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Community</h3>
+        <ul>
+          <li><a href="{% url 'register' %}">Write for us</a></li>
+          <li><a href="{% url 'home' %}">Guidelines</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Account</h3>
+        <ul>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'profile' %}">Your profile</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}">Log in</a></li>
+            <li><a href="{% url 'register' %}">Join Blog Risers</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <p>&copy; {% now "Y" %} Blog Risers. Built with care.</p>
+  </div>
+</footer>

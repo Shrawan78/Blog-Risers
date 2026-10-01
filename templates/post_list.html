@@ -5,171 +5,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Explore — Blog Risers</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
 
-  <header class="masthead">
-    <div class="masthead__top">
-      <a href="{% url 'home' %}" class="masthead__brand">
-        <span class="masthead__mark">Blog Risers</span>
-        <span class="masthead__tagline">Stories worth staying up for</span>
-      </a>
-    </div>
-    <nav class="site-nav" aria-label="Primary">
-      <div class="site-nav__inner">
-        <ul class="site-nav__links">
-          <li><a href="{% url 'home' %}">Home</a></li>
-          <li><a href="{% url 'post_list' %}" class="is-active">Explore</a></li>
-          <li><a href="{% url 'category_list' %}">Categories</a></li>
-          <li><a href="{% url 'post_create' %}">Write</a></li>
-        </ul>
-        <form class="site-nav__search" action="{% url 'post_list' %}" method="get" role="search">
-          <label for="site-search" class="visually-hidden">Search posts</label>
-          <svg class="site-nav__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <circle cx="7" cy="7" r="5.25" stroke="currentColor" stroke-width="1.4"/>
-            <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-          <input id="site-search" type="search" name="q" placeholder="Search titles, authors, tags" autocomplete="off">
-        </form>
-        <div class="site-nav__account">
-          <a href="{% url 'login' %}" class="site-nav__login">Log in</a>
-          <a href="{% url 'register' %}" class="button button--small">Join</a>
-        </div>
-      </div>
-    </nav>
-  </header>
+  {% include 'partials/header.html' with active='explore' %}
 
   <main>
     <div class="page-header">
       <h1>Explore</h1>
-      <p>Every story published on Blog Risers, newest first. Filter by category or search for something specific.</p>
+      <p>Every story published on Blog Risers, newest first. Search, filter, and sort to find something specific.</p>
     </div>
 
     <section class="latest">
       <div class="section-head section-head--with-filters">
         <h2>All posts</h2>
-        <form class="filter-bar" action="{% url 'post_list' %}" method="get">
+        <form class="filter-bar filter-bar--wrap" action="{% url 'post_list' %}" method="get">
+          {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+
           <label for="filter-category" class="visually-hidden">Filter by category</label>
           <select id="filter-category" name="category">
             <option value="">All categories</option>
-            <option>Culture</option>
-            <option>Technology</option>
-            <option>Personal Essays</option>
-            <option>Food &amp; Home</option>
-            <option>Travel</option>
-            <option>Science</option>
+            {% for category in categories %}
+            <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
           </select>
+
+          <label for="filter-tag" class="visually-hidden">Filter by tag</label>
+          <select id="filter-tag" name="tag">
+            <option value="">All tags</option>
+            {% for tag in tags %}
+            <option value="{{ tag.slug }}" {% if request.GET.tag == tag.slug %}selected{% endif %}>{{ tag.name }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="filter-date-from" class="visually-hidden">Published after</label>
+          <input id="filter-date-from" type="date" name="date_from" value="{{ request.GET.date_from|default:'' }}" title="Published from">
+
+          <label for="filter-date-to" class="visually-hidden">Published before</label>
+          <input id="filter-date-to" type="date" name="date_to" value="{{ request.GET.date_to|default:'' }}" title="Published to">
+
           <label for="filter-sort" class="visually-hidden">Sort by</label>
           <select id="filter-sort" name="sort">
-            <option>Newest first</option>
-            <option>Oldest first</option>
-            <option>Most read</option>
+            <option value="newest" {% if request.GET.sort == "newest" or not request.GET.sort %}selected{% endif %}>Newest first</option>
+            <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Oldest first</option>
+            <option value="popular" {% if request.GET.sort == "popular" %}selected{% endif %}>Most read</option>
           </select>
+
           <button type="submit" class="button button--outline button--small">Apply</button>
+          {% if request.GET.category or request.GET.tag or request.GET.date_from or request.GET.date_to or request.GET.sort %}
+          <a href="{% url 'post_list' %}{% if request.GET.q %}?q={{ request.GET.q }}{% endif %}" class="button button--small">Clear filters</a>
+          {% endif %}
         </form>
       </div>
 
       <div class="latest__list">
+        {% for post in posts %}
         <article class="post-row">
-          <a class="post-row__cover" href="{% url 'post_detail' 'sample-post' %}">
-            <div class="cover-block cover-block--a"><span class="cover-block__initial">S</span></div>
+          <a class="post-row__cover" href="{% url 'post_detail' post.slug %}">
+            {% if post.cover_image %}
+              <img src="{{ post.cover_image.url }}" alt="">
+            {% else %}
+              <div class="cover-block cover-block--{% cycle 'a' 'b' 'c' 'd' %}"><span class="cover-block__initial">{{ post.title|first|upper }}</span></div>
+            {% endif %}
           </a>
           <div class="post-row__body">
-            <p class="post-row__meta"><span>Culture</span><span class="dot">&middot;</span><span>Sep 24, 2026</span></p>
-            <h3 class="post-row__title"><a href="{% url 'post_detail' 'sample-post' %}">The Slow Read: Why We're Forgetting How to Finish a Book</a></h3>
-            <p class="post-row__excerpt">Somewhere between the library card and the algorithmic feed, we traded long attention for a hundred short ones. What it might take to get it back.</p>
-            <p class="post-row__footer">Maya Okonkwo<span class="dot">&middot;</span>6 min read<span class="dot">&middot;</span>12 comments</p>
+            <p class="post-row__meta"><span>{{ post.category.name|default:"Essay" }}</span><span class="dot">&middot;</span><span>{{ post.published_at|date:"M j, Y" }}</span></p>
+            <h3 class="post-row__title"><a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a></h3>
+            <p class="post-row__excerpt">{{ post.excerpt|default:post.body|truncatewords:26 }}</p>
+            <p class="post-row__footer">{{ post.author.username }}<span class="dot">&middot;</span>{{ post.read_time }} min read<span class="dot">&middot;</span>{{ post.comment_count }} comment{{ post.comment_count|pluralize }}</p>
           </div>
         </article>
-
-        <article class="post-row">
-          <a class="post-row__cover" href="{% url 'post_detail' 'sample-post' %}">
-            <div class="cover-block cover-block--b"><span class="cover-block__initial">C</span></div>
-          </a>
-          <div class="post-row__body">
-            <p class="post-row__meta"><span>Food &amp; Home</span><span class="dot">&middot;</span><span>Sep 21, 2026</span></p>
-            <h3 class="post-row__title"><a href="{% url 'post_detail' 'sample-post' %}">Learning to Cook for One Without It Feeling Sad</a></h3>
-            <p class="post-row__excerpt">A year of one-pot dinners taught me that cooking for yourself isn't a smaller version of cooking for others. It's its own thing entirely.</p>
-            <p class="post-row__footer">Tomas Reyes<span class="dot">&middot;</span>5 min read<span class="dot">&middot;</span>8 comments</p>
-          </div>
-        </article>
-
-        <article class="post-row">
-          <a class="post-row__cover" href="{% url 'post_detail' 'sample-post' %}">
-            <div class="cover-block cover-block--c"><span class="cover-block__initial">W</span></div>
-          </a>
-          <div class="post-row__body">
-            <p class="post-row__meta"><span>Personal Essays</span><span class="dot">&middot;</span><span>Sep 18, 2026</span></p>
-            <h3 class="post-row__title"><a href="{% url 'post_detail' 'sample-post' %}">What Ten Years of Journaling Taught Me About Memory</a></h3>
-            <p class="post-row__excerpt">I went back and reread a decade of notebooks. The person who wrote them was familiar, and also a stranger.</p>
-            <p class="post-row__footer">Aisha Patel<span class="dot">&middot;</span>7 min read<span class="dot">&middot;</span>15 comments</p>
-          </div>
-        </article>
-
-        <article class="post-row">
-          <a class="post-row__cover" href="{% url 'post_detail' 'sample-post' %}">
-            <div class="cover-block cover-block--d"><span class="cover-block__initial">B</span></div>
-          </a>
-          <div class="post-row__body">
-            <p class="post-row__meta"><span>Technology</span><span class="dot">&middot;</span><span>Sep 14, 2026</span></p>
-            <h3 class="post-row__title"><a href="{% url 'post_detail' 'sample-post' %}">The Case for Boring Infrastructure</a></h3>
-            <p class="post-row__excerpt">The most reliable systems I've worked on are also the least exciting to talk about. That's not a coincidence.</p>
-            <p class="post-row__footer">Sam Whitfield<span class="dot">&middot;</span>9 min read<span class="dot">&middot;</span>4 comments</p>
-          </div>
-        </article>
-
-        <article class="post-row">
-          <a class="post-row__cover" href="{% url 'post_detail' 'sample-post' %}">
-            <div class="cover-block cover-block--a"><span class="cover-block__initial">T</span></div>
-          </a>
-          <div class="post-row__body">
-            <p class="post-row__meta"><span>Travel</span><span class="dot">&middot;</span><span>Sep 9, 2026</span></p>
-            <h3 class="post-row__title"><a href="{% url 'post_detail' 'sample-post' %}">Three Weeks in a Town With No Name on the Map</a></h3>
-            <p class="post-row__excerpt">It wasn't on the map because it wasn't meant for people like me. Here's what I learned by staying anyway.</p>
-            <p class="post-row__footer">Elena Vasquez<span class="dot">&middot;</span>8 min read<span class="dot">&middot;</span>21 comments</p>
-          </div>
-        </article>
+        {% empty %}
+        <p class="latest__empty">
+          {% if request.GET.q or request.GET.category or request.GET.tag or request.GET.date_from or request.GET.date_to %}No posts match that search or filter.{% else %}Nothing has been published yet. Once posts go live, they'll show up here.{% endif %}
+        </p>
+        {% endfor %}
       </div>
 
+      {% if is_paginated %}
       <nav class="pagination" aria-label="Post pages">
-        <span class="pagination__status">Page 1 of 4</span>
-        <a href="{% url 'post_list' %}" class="pagination__link" aria-label="Next page">
-          Next
-          <svg width="9" height="14" viewBox="0 0 9 14" fill="none" aria-hidden="true"><path d="M1.5 1L7.5 7L1.5 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="pagination__link">
+          <svg width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.5 1L1.5 7L7.5 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Previous
         </a>
+        {% endif %}
+        <span class="pagination__status">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="pagination__link">
+          Next
+          <svg width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M1.5 1L7.5 7L1.5 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        {% endif %}
       </nav>
+      {% endif %}
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="site-footer__inner">
-      <div class="footer-brand">
-        <span class="footer-brand__mark">Blog Risers</span>
-        <p class="footer-brand__tagline">A home for writers and the people who read them.</p>
-      </div>
-      <div class="footer-columns">
-        <div class="footer-column">
-          <h3>Explore</h3>
-          <ul><li><a href="{% url 'post_list' %}">All posts</a></li><li><a href="{% url 'category_list' %}">Categories</a></li></ul>
-        </div>
-        <div class="footer-column">
-          <h3>Community</h3>
-          <ul><li><a href="{% url 'register' %}">Write for us</a></li><li><a href="{% url 'home' %}">Guidelines</a></li></ul>
-        </div>
-        <div class="footer-column">
-          <h3>Account</h3>
-          <ul><li><a href="{% url 'login' %}">Log in</a></li><li><a href="{% url 'register' %}">Join Blog Risers</a></li></ul>
-        </div>
-      </div>
-    </div>
-    <div class="site-footer__bottom"><p>&copy; 2026 Blog Risers. Built with care.</p></div>
-  </footer>
+  {% include 'partials/footer.html' %}
 
 </body>
 </html>

@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit profile — Blog Risers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+  {% include 'partials/header.html' %}
+
+  <main>
+    <div class="page-header">
+      <h1>Edit your profile</h1>
+      <p>Update your bio and avatar. Your username and email are managed separately.</p>
+    </div>
+
+    <div class="form-page">
+      <form class="form-card" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if messages %}
+          {% for message in messages %}
+          <p class="form-hint">{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+
+        <div class="form-field">
+          <label for="id_bio">Bio</label>
+          {{ form.bio }}
+          {% if form.bio.errors %}<p class="form-error">{{ form.bio.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="form-field">
+          <label for="id_avatar">Avatar</label>
+          {{ form.avatar }}
+          {% if form.avatar.errors %}<p class="form-error">{{ form.avatar.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="button">Save changes</button>
+          <a href="{% url 'profile' %}" class="button button--outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  {% include 'partials/footer.html' %}
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+{% load static %}
+<header class="masthead">
+  <div class="masthead__top">
+    <a href="{% url 'home' %}" class="masthead__brand">
+      <span class="masthead__mark">Blog Risers</span>
+      <span class="masthead__tagline">Stories worth staying up for</span>
+    </a>
+  </div>
+
+  <nav class="site-nav" aria-label="Primary">
+    <div class="site-nav__inner">
+      <ul class="site-nav__links">
+        <li><a href="{% url 'home' %}" {% if active == 'home' %}class="is-active"{% endif %}>Home</a></li>
+        <li><a href="{% url 'post_list' %}" {% if active == 'explore' %}class="is-active"{% endif %}>Explore</a></li>
+        <li><a href="{% url 'category_list' %}" {% if active == 'categories' %}class="is-active"{% endif %}>Categories</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'post_create' %}" {% if active == 'write' %}class="is-active"{% endif %}>Write</a></li>
+        {% endif %}
+      </ul>
+
+      <form class="site-nav__search" action="{% url 'post_list' %}" method="get" role="search">
+        <label for="site-search" class="visually-hidden">Search posts</label>
+        <svg class="site-nav__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.25" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <input id="site-search" type="search" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search titles, authors, tags" autocomplete="off">
+      </form>
+
+      <div class="site-nav__account">
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="site-nav__user">{{ user.username }}</a>
+          <form action="{% url 'logout' %}" method="post" class="site-nav__logout-form">
+            {% csrf_token %}
+            <button type="submit" class="link-button">Log out</button>
+          </form>
+        {% else %}
+          <span class="site-nav__user">Guest</span>
+          <a href="{% url 'login' %}" class="site-nav__login">Log in</a>
+          <a href="{% url 'register' %}" class="button button--small">Join</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+</header>

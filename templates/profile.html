@@ -4,127 +4,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maya Okonkwo — Blog Risers</title>
-
+  <title>{{ user.username }} — Blog Risers</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
 
-  <header class="masthead">
-    <div class="masthead__top">
-      <a href="{% url 'home' %}" class="masthead__brand">
-        <span class="masthead__mark">Blog Risers</span>
-        <span class="masthead__tagline">Stories worth staying up for</span>
-      </a>
-    </div>
-    <nav class="site-nav" aria-label="Primary">
-      <div class="site-nav__inner">
-        <ul class="site-nav__links">
-          <li><a href="{% url 'home' %}">Home</a></li>
-          <li><a href="{% url 'post_list' %}">Explore</a></li>
-          <li><a href="{% url 'category_list' %}">Categories</a></li>
-          <li><a href="{% url 'post_create' %}">Write</a></li>
-        </ul>
-        <form class="site-nav__search" action="{% url 'post_list' %}" method="get" role="search">
-          <label for="site-search" class="visually-hidden">Search posts</label>
-          <svg class="site-nav__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <circle cx="7" cy="7" r="5.25" stroke="currentColor" stroke-width="1.4"/>
-            <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-          <input id="site-search" type="search" name="q" placeholder="Search titles, authors, tags" autocomplete="off">
-        </form>
-        <div class="site-nav__account">
-          <span class="site-nav__user">Maya Okonkwo</span>
-        </div>
-      </div>
-    </nav>
-  </header>
+  {% include 'partials/header.html' %}
 
   <main>
     <div class="profile-header">
-      <div class="avatar">M</div>
+      {% if user.profile.avatar %}
+        <img class="avatar" src="{{ user.profile.avatar.url }}" alt="" style="object-fit: cover;">
+      {% else %}
+        <div class="avatar">{{ user.username|first|upper }}</div>
+      {% endif %}
       <div>
-        <h1>Maya Okonkwo</h1>
-        <p class="profile-header__bio">Writes about culture, attention, and the slow stuff. Based in Lisbon. Previously a bookseller for six years.</p>
-        <p class="profile-header__stats">14 posts &middot; Joined March 2025</p>
+        <h1>{{ user.username }}</h1>
+        <p class="profile-header__bio">{{ user.profile.bio|default:"Hasn't added a bio yet." }}</p>
+        <p class="profile-header__stats">{{ posts.count }} post{{ posts.count|pluralize }} &middot; Joined {{ user.date_joined|date:"F Y" }}</p>
       </div>
       <div class="profile-header__actions">
-        <a href="#" class="button button--outline button--small">Edit profile</a>
+        <a href="{% url 'profile_edit' %}" class="button button--outline button--small">Edit profile</a>
       </div>
     </div>
 
     <section class="latest">
-      <div class="section-head">
-        <h2>Their posts</h2>
-      </div>
+      <div class="section-head"><h2>Your posts</h2></div>
 
       <div class="latest__list">
+        {% for post in posts %}
         <article class="post-row">
-          <a class="post-row__cover" href="{% url 'post_detail' 'sample-post' %}">
-            <div class="cover-block cover-block--a"><span class="cover-block__initial">S</span></div>
+          <a class="post-row__cover" href="{% url 'post_detail' post.slug %}">
+            {% if post.cover_image %}
+              <img src="{{ post.cover_image.url }}" alt="">
+            {% else %}
+              <div class="cover-block cover-block--{% cycle 'a' 'b' 'c' 'd' %}"><span class="cover-block__initial">{{ post.title|first|upper }}</span></div>
+            {% endif %}
           </a>
           <div class="post-row__body">
-            <p class="post-row__meta"><span>Culture</span><span class="dot">&middot;</span><span>Sep 24, 2026</span></p>
-            <h3 class="post-row__title"><a href="{% url 'post_detail' 'sample-post' %}">The Slow Read: Why We're Forgetting How to Finish a Book</a></h3>
-            <p class="post-row__excerpt">Somewhere between the library card and the algorithmic feed, we traded long attention for a hundred short ones.</p>
-            <p class="post-row__footer">6 min read<span class="dot">&middot;</span>12 comments</p>
+            <p class="post-row__meta">
+              <span>{{ post.category.name|default:"Essay" }}</span><span class="dot">&middot;</span>
+              <span>{{ post.published_at|date:"M j, Y"|default:"Draft" }}</span>
+              {% if post.status == 'draft' %}<span class="dot">&middot;</span><span>Draft</span>{% endif %}
+            </p>
+            <h3 class="post-row__title"><a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a></h3>
+            <p class="post-row__excerpt">{{ post.excerpt|default:post.body|truncatewords:26 }}</p>
+            <p class="post-row__footer">
+              {{ post.read_time }} min read<span class="dot">&middot;</span>{{ post.comment_count }} comment{{ post.comment_count|pluralize }}
+              <span class="dot">&middot;</span><a href="{% url 'post_update' post.slug %}">Edit</a>
+              <span class="dot">&middot;</span><a href="{% url 'post_delete' post.slug %}">Delete</a>
+            </p>
           </div>
         </article>
-
-        <article class="post-row">
-          <a class="post-row__cover" href="{% url 'post_detail' 'sample-post' %}">
-            <div class="cover-block cover-block--b"><span class="cover-block__initial">O</span></div>
-          </a>
-          <div class="post-row__body">
-            <p class="post-row__meta"><span>Culture</span><span class="dot">&middot;</span><span>Aug 30, 2026</span></p>
-            <h3 class="post-row__title"><a href="{% url 'post_detail' 'sample-post' %}">On Rereading the Same Five Books Every Year</a></h3>
-            <p class="post-row__excerpt">There's a specific comfort in already knowing how a story ends before you start it again.</p>
-            <p class="post-row__footer">5 min read<span class="dot">&middot;</span>9 comments</p>
-          </div>
-        </article>
-
-        <article class="post-row">
-          <a class="post-row__cover" href="{% url 'post_detail' 'sample-post' %}">
-            <div class="cover-block cover-block--c"><span class="cover-block__initial">B</span></div>
-          </a>
-          <div class="post-row__body">
-            <p class="post-row__meta"><span>Personal Essays</span><span class="dot">&middot;</span><span>Aug 12, 2026</span></p>
-            <h3 class="post-row__title"><a href="{% url 'post_detail' 'sample-post' %}">Six Years Behind a Bookshop Counter</a></h3>
-            <p class="post-row__excerpt">What selling books for a living taught me that reading them never did.</p>
-            <p class="post-row__footer">8 min read<span class="dot">&middot;</span>17 comments</p>
-          </div>
-        </article>
+        {% empty %}
+        <p class="latest__empty">You haven't written anything yet. <a href="{% url 'post_create' %}">Start your first post</a>.</p>
+        {% endfor %}
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="site-footer__inner">
-      <div class="footer-brand">
-        <span class="footer-brand__mark">Blog Risers</span>
-        <p class="footer-brand__tagline">A home for writers and the people who read them.</p>
-      </div>
-      <div class="footer-columns">
-        <div class="footer-column">
-          <h3>Explore</h3>
-          <ul><li><a href="{% url 'post_list' %}">All posts</a></li><li><a href="{% url 'category_list' %}">Categories</a></li></ul>
-        </div>
-        <div class="footer-column">
-          <h3>Community</h3>
-          <ul><li><a href="{% url 'register' %}">Write for us</a></li><li><a href="{% url 'home' %}">Guidelines</a></li></ul>
-        </div>
-        <div class="footer-column">
-          <h3>Account</h3>
-          <ul><li><a href="{% url 'login' %}">Log in</a></li><li><a href="{% url 'register' %}">Join Blog Risers</a></li></ul>
-        </div>
-      </div>
-    </div>
-    <div class="site-footer__bottom"><p>&copy; 2026 Blog Risers. Built with care.</p></div>
-  </footer>
+  {% include 'partials/footer.html' %}
 
 </body>
 </html>
