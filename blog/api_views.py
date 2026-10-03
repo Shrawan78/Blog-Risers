@@ -1,3 +1,14 @@
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+
+from .serializers import (
+    PostSerializer, CommentSerializer, CategorySerializer,
+    TagSerializer, RegisterSerializer,
+)
+
 from rest_framework import viewsets, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -60,3 +71,37 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_api(request):
+    """POST {username, email, password} -> creates a user and returns a
+    token, the same way the website's register view logs you in immediately
+    after signup."""
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key, 'username': user.username}, status=201)
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_api(request):
+    """POST {username, password} -> returns a token on success. The client
+    is expected to send this token as 'Authorization: Token <key>' on every
+    request after this."""
+    user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
+    if user is None:
+        return Response({'detail': 'Invalid username or password.'}, status=400)
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({'token': token.key, 'username': user.username})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_api(request):
+    """Deletes the caller's token, so it can no longer be used to authenticate."""
+    request.user.auth_token.delete()
+    return Response(status=204)

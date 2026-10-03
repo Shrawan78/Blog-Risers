@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Post, Comment, Category, Tag
-
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 
 class CategorySerializer(serializers.ModelSerializer):
     """Turns a Category into JSON: id, name, slug, description."""
@@ -20,7 +21,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     """A single comment. 'author' is shown as a username but can't be set
-    by the client directly — the view fills it in from the logged-in user."""
+    by the client directly - the view fills it in from the logged-in user."""
 
     author = serializers.ReadOnlyField(source='author.username')
 
@@ -52,3 +53,23 @@ class PostSerializer(serializers.ModelSerializer):
             'read_time', 'comment_count', 'created_at', 'updated_at', 'published_at',
         ]
         read_only_fields = ['slug', 'author', 'views', 'created_at', 'updated_at', 'published_at']
+
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    """Used only by the API's /api/auth/register/ endpoint. Separate from
+    the website's RegisterForm in forms.py — that one renders an HTML page,
+    this one accepts and returns JSON."""
+
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
+
+    def create(self, validated_data):
+        return User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password'],
+        )
